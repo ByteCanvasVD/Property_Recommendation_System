@@ -1,0 +1,301 @@
+#include <iostream>
+#include <string.h>
+#include <cmath>
+#include <iomanip>
+using namespace std;
+
+class Node
+{
+    public:
+    float data;
+    string place;
+    Node *next;
+};
+
+Node* SortedMerge(Node* a, Node* b);
+void FrontBackSplit(Node* source,
+                    Node** frontRef, Node** backRef);
+ 
+/* sorts the linked list by changing next pointers (not data) */
+void MergeSort(Node** headRef)
+{
+    Node* head = *headRef;
+    Node* a;
+    Node* b;
+ 
+    /* Base case -- length 0 or 1 */
+    if ((head == NULL) || (head->next == NULL)) {
+        return;
+    }
+ 
+    /* Split head into 'a' and 'b' sublists */
+    FrontBackSplit(head, &a, &b);
+ 
+    /* Recursively sort the sublists */
+    MergeSort(&a);
+    MergeSort(&b);
+ 
+    /* answer = merge the two sorted lists together */
+    *headRef = SortedMerge(a, b);
+}
+
+Node* SortedMerge(Node* a, Node* b)
+{
+    Node* result = NULL;
+ 
+    /* Base cases */
+    if (a == NULL)
+        return (b);
+    else if (b == NULL)
+        return (a);
+ 
+    /* Pick either a or b, and recur */
+    if (a->data <= b->data) {
+        result = a;
+        result->next = SortedMerge(a->next, b);
+    }
+    else {
+        result = b;
+        result->next = SortedMerge(a, b->next);
+    }
+    return (result);
+}
+ 
+/* UTILITY FUNCTIONS */
+/* Split the nodes of the given list into front and back halves,
+    and return the two lists using the reference parameters.
+    If the length is odd, the extra node should go in the front list.
+    Uses the fast/slow pointer strategy. */
+void FrontBackSplit(Node* source,
+                    Node** frontRef, Node** backRef)
+{
+    Node* fast;
+    Node* slow;
+    slow = source;
+    fast = source->next;
+ 
+    /* Advance 'fast' two nodes, and advance 'slow' one node */
+    while (fast != NULL) {
+        fast = fast->next;
+        if (fast != NULL) {
+            slow = slow->next;
+            fast = fast->next;
+        }
+    }
+ 
+    /* 'slow' is before the midpoint in the list, so split it in two
+    at that point. */
+    *frontRef = source;
+    *backRef = slow->next;
+    slow->next = NULL;
+}
+
+/* Given a reference (pointer to pointer) to the head
+of a list and an int, appends a new node at the end */
+void append(Node** head_ref, string new_place, float new_data)
+{
+    /* 1. allocate node */
+    Node* new_node = new Node();
+ 
+    Node *last = *head_ref; /* used in step 5*/
+ 
+    /* 2. put in the data */
+    new_node->place = new_place;
+    new_node->data = new_data;
+ 
+    /* 3. This new node is going to be
+    the last node, so make next of
+    it as NULL*/
+    new_node->next = NULL;
+ 
+    /* 4. If the Linked List is empty,
+    then make the new node as head */
+    if (*head_ref == NULL)
+    {
+        *head_ref = new_node;
+        return;
+    }
+ 
+    /* 5. Else traverse till the last node */
+    while (last->next != NULL)
+    {
+        last = last->next;
+    }
+ 
+    /* 6. Change the next of last node */
+    last->next = new_node;
+    return;
+}
+ 
+// This function prints contents of
+// linked list starting from head
+void printList(Node *node)
+{
+    while (node != NULL)
+    {
+        cout<<"\n"<<node->place;
+        cout<<" -> "<<node->data<<" km";
+        node = node->next;
+    }
+}
+ 
+float dist(float arx, float lmx, float ary, float lmy)
+{
+	return sqrt((((arx - lmx)*(arx - lmx))+((ary - lmy)*(ary - lmy))));
+}
+
+ int main(){
+      cout<<"Choose your area \n1.Bandra West \n2.Worli \n3.Thane \n4.Dadar West \n5.Andheri West\n";
+      cout << "\nEnter the option for the Area in Mumbai: ";
+
+    //------------------Variable Declarations-----------------
+
+      int landmark,area;
+      cin>>area;
+      //AREA 1
+      float bandra [3][2] = {{1.6,8.7},{1.7,8.6},{1.9,8.8}};
+      float bandraprop [5][2] = {{2,8.1},{2,8.5},{2.3,8.4},{0.9,8.9},{2.9,8.1}};
+      string bandrapropname [5] = {"Casa di Rosa","Bay view Appartment","West Bay","Elco residency","81 Aureate"};
+
+      //AREA 2
+      float worli [3][2] = {{0,0},{0.3,0},{.8,-.6}};
+      float worliprop [5][2] = {{-.5,1.0},{-1,.5},{1.2,-.9},{-0.6,1.9},{-1.5,.3}};
+      string worlipropname [5] = {"Lodha the park","Harmony Building","Raheja Imperia","Corner stone","Mahindra Towers"};
+
+      //AREA 3
+      float thane [3][2] = {{12.3,20.1},{11.1,20.5},{11.6,20.7}};
+      float thaneprop [5][2] = {{12.5,20.6},{11.6,19.5},{11.2,20},{13.7,19.9},{12.5,20.9}};
+      string thanepropname [5] = {"Ashar metro towers","The icon","Ritu city Richmond","Samrin heritage","Vasant Vihar"};
+
+      //AREA 4
+      float dadar [3][2] = {{4.5,3.2},{5,2.7},{3.3,3.5}};
+      float dadarprop [5][2] = {{4.2,3},{3.6,4.8},{3.9,4.2},{3.1,3},{4.9,3.5}};
+      string dadarpropname [5] = {"Park Mist","Shiv krupa","Sugee Akanksha","25 South","Suraj Paletle"};
+
+      //AREA 5
+      float andheri [3][2] = {{1.5,15.8},{1.3,16.5},{2.3,14.9}};
+      float andheriprop [5][2] = {{1.6,14.8},{1.2,16},{0.3,15.6},{2.4,14.9},{2.8,15.6}};
+      string andheripropname [5] = {"Shilpa Housing Society","Vasant Oasis","Romell Amor","Transcon Triumph","Swasharaya"};
+
+      // -----------------Loop Begins-----------------
+        switch(area){
+        case 1: {cout<<"\nEnter the landmark in Bandra West area: \n1.Bandra Station, Western Railway \n2.Bandra Bandstand \n3.Jogger's Park \n";
+        cin>>landmark;
+
+    Node* head = NULL;
+
+    if(landmark==1){for(int i = 0; i<5;i++){
+        append(&head,bandrapropname [i], dist(bandra[0][0],bandraprop [i][0],bandra[0][1],bandraprop [i][1]));
+        }}
+    else if(landmark==2){for (int i = 0; i<5;i++){
+          append(&head,bandrapropname[i], dist(bandra[1][0],bandraprop [i][0],bandra[1][1],bandraprop [i][1]));
+          }}
+    else if(landmark==3){for (int i = 0; i<5;i++){
+          append(&head,bandrapropname[i], dist(bandra[2][0],bandraprop [i][0],bandra[2][1],bandraprop [i][1]));
+          }}
+
+    MergeSort(&head);
+    cout<<"Sorted List of Properties for Bandra \n";
+    printList(head);
+        }
+        break;
+
+////------------------------------------------------------------------------------------------------------------------------------------------------
+        
+        case 2:{cout<<"\nEnter the landmark in Worli area: \n1.Worli Sea Face \n2.Nehru Centre \n3.Atria- The millennium mall \n";
+        cin>>landmark;
+    Node* head = NULL;
+
+    if(landmark==1){for(int i = 0; i<5;i++){
+        append(&head,worlipropname [i], dist(worli[0][0],worliprop [i][0],worli[0][1],worliprop [i][1]));
+        }}
+    else if(landmark==2){for (int i = 0; i<5;i++){
+          append(&head,worlipropname[i], dist(worli[1][0],worliprop [i][0],worli[1][1],worliprop [i][1]));
+          }}
+    else if(landmark==3){for (int i = 0; i<5;i++){
+          append(&head,worlipropname[i], dist(worli[2][0],worliprop [i][0],worli[2][1],worliprop [i][1]));
+          }}
+
+    MergeSort(&head);
+    cout<<"Sorted List of Properties for worli \n";
+    printList(head);
+        }
+
+        break;
+ 
+////------------------------------------------------------------------------------------------------------------------------------------------------
+
+        case 3: {cout<<"\nEnter the landmark in Thane area: \n1.Thane Station \n2.Thane Creek \n3.Upvan Lake \n";
+        cin>>landmark;
+
+        Node* head = NULL;
+
+    if(landmark==1){for(int i = 0; i<5;i++){
+        append(&head,thanepropname [i], dist(thane[0][0],thaneprop [i][0],thane[0][1],thaneprop [i][1]));
+        }}
+    else if(landmark==2){for (int i = 0; i<5;i++){
+          append(&head,thanepropname[i], dist(thane[1][0],thaneprop [i][0],thane[1][1],thaneprop [i][1]));
+          }}
+    else if(landmark==3){for (int i = 0; i<5;i++){
+          append(&head,thanepropname[i], dist(thane[2][0],thaneprop [i][0],thane[2][1],thaneprop [i][1]));
+          }}
+
+    MergeSort(&head);
+    cout<<"Sorted List of Properties for Thane \n";
+    printList(head);
+        }
+        break;
+
+
+////------------------------------------------------------------------------------------------------------------------------------------------------
+
+        case 4:{cout<<"\nEnter the landmark in Dadar West area: \n1.Mahim Beach \n2.Dadar Station \n3.Shivaji Park \n";
+        cin>>landmark;
+
+        Node* head = NULL;
+
+    if(landmark==1){for(int i = 0; i<5;i++){
+        append(&head,dadarpropname [i], dist(dadar[0][0],dadarprop [i][0],dadar[0][1],dadarprop [i][1]));
+        }}
+    else if(landmark==2){for (int i = 0; i<5;i++){
+          append(&head,dadarpropname[i], dist(dadar[1][0],dadarprop [i][0],dadar[1][1],dadarprop [i][1]));
+          }}
+    else if(landmark==3){for (int i = 0; i<5;i++){
+          append(&head,dadarpropname[i], dist(dadar[2][0],dadarprop [i][0],dadar[2][1],dadarprop [i][1]));
+          }}
+
+    MergeSort(&head);
+    cout<<"Sorted List of Properties for dadar \n";
+    printList(head);
+        }
+
+        break;
+
+////------------------------------------------------------------------------------------------------------------------------------------------------
+
+        case 5: {cout<<"\nEnter the landmark in Andheri West area: \n1.Metro Station \n2.Versova Beach \n3.Andheri Market \n";
+        cin>>landmark;
+
+        Node* head = NULL;
+
+    if(landmark=1){for(int i = 0; i<5;i++){
+        append(&head,andheripropname [i], dist(andheri[0][0],andheriprop [i][0],andheri[0][1],andheriprop [i][1]));
+        }}
+    else if(landmark==2){for (int i = 0; i<5;i++){
+          append(&head,andheripropname[i], dist(andheri[1][0],andheriprop [i][0],andheri[1][1],andheriprop [i][1]));
+          }}
+    else if(landmark==3){for (int i = 0; i<5;i++){
+          append(&head,andheripropname[i], dist(andheri[2][0],andheriprop [i][0],andheri[2][1],andheriprop [i][1]));
+          }}
+
+    MergeSort(&head);
+    cout<<"Sorted List of Properties for andheri \n";
+    printList(head);
+        }
+
+        break;
+        default:
+        cout<<"Choose a valid option! ";
+        }
+return 0;}
+
